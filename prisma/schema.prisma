@@ -1,0 +1,92 @@
+// Prisma Schema for KnowledgeStream AI Local SQLite Database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String          @id @default(uuid())
+  name         String
+  email        String          @unique
+  passwordHash String
+  phone        String?
+  role         String          @default("Student") // Student | Employee | Admin | Recruiter | Company
+  country      String?         @default("United States")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  sessions     Session[]
+  enrollments  Enrollment[]
+  progresses   TopicProgress[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Course {
+  id           String       @id @default(uuid())
+  title        String       // C Programming | C++ Mastery | Python AI | Java Enterprise
+  description  String
+  language     String       @default("cpp") // c | cpp | python | java
+  price        Float        // e.g. 1999
+  validityDays Int          @default(90) // 90 Days validity
+  instructor   String
+  level        String       // Beginner | Intermediate | Advanced
+  category     String
+  thumbnail    String
+  duration     String
+  lessons      Int
+  rating       Float        @default(4.9)
+  createdAt    DateTime     @default(now())
+  topics       Topic[]
+  enrollments  Enrollment[]
+}
+
+model Topic {
+  id          String          @id @default(uuid())
+  courseId    String
+  course      Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  orderNumber Int             // 1, 2, 3, 4...
+  title       String          // e.g. "Topic 1: Variables & Data Types"
+  explanation String          // Full text content for AI Speech Synthesis
+  quizData    String          // JSON string of 5-10 quiz questions
+  challenges  String          // JSON string of Easy, Medium, Hard coding problems
+  createdAt   DateTime        @default(now())
+  progresses  TopicProgress[]
+}
+
+model TopicProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  topicId     String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  isCompleted Boolean  @default(false)
+  quizScore   Int      @default(0)
+  codeSolved  Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, topicId])
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  userId     String
+  courseId   String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  paidAmount Float
+  paymentId  String   // Razorpay Payment ID (e.g. pay_Rzp987123)
+  progress   Int      @default(0)
+  createdAt  DateTime @default(now())
+}

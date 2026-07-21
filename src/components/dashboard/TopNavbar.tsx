@@ -1,0 +1,169 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  Sparkles,
+  Search,
+  Command,
+  Bell,
+  Calendar,
+  MessageSquare,
+  Sun,
+  Moon,
+  Settings,
+  User,
+  ChevronDown,
+  ShieldCheck,
+} from "lucide-react";
+
+interface TopNavbarProps {
+  userName?: string;
+  userRole?: string;
+}
+
+export function TopNavbar({ userName = "Chandu", userRole = "Student" }: TopNavbarProps) {
+  const [darkMode, setDarkMode] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    // Sync initial theme
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      setDarkMode(false);
+      document.documentElement.classList.add("light");
+      document.body.classList.add("light");
+    } else {
+      setDarkMode(true);
+      document.documentElement.classList.remove("light");
+      document.body.classList.remove("light");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextMode = !darkMode;
+    setDarkMode(nextMode);
+    if (typeof window !== "undefined") {
+      if (!nextMode) {
+        document.documentElement.classList.add("light");
+        document.body.classList.add("light");
+        localStorage.setItem("theme", "light");
+      } else {
+        document.documentElement.classList.remove("light");
+        document.body.classList.remove("light");
+        localStorage.setItem("theme", "dark");
+      }
+    }
+  };
+
+  return (
+    <header className="h-16 border-b border-white/10 bg-[#09090B]/90 backdrop-blur-xl px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 select-none">
+      {/* Left Brand Logo */}
+      <div className="flex items-center gap-3">
+        <a href="/dashboard" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-purple-600 to-cyan-400 p-[1px] shadow-lg shadow-blue-500/25 group-hover:scale-105 transition-transform">
+            <div className="w-full h-full bg-[#09090B] rounded-[11px] flex items-center justify-center">
+              <Sparkles size={18} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
+            </div>
+          </div>
+          <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5">
+            Knowledge<span className="text-blue-500">Stream</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-cyan-300 font-mono border border-cyan-500/30">
+              AI OS 3.0
+            </span>
+          </span>
+        </a>
+      </div>
+
+      {/* Center Search Input */}
+      <div className="hidden md:flex items-center gap-2 max-w-md w-full">
+        <div className="relative w-full">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search projects, AI agents, courses, tasks... (Ctrl + K)"
+            className="w-full pl-9 pr-12 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all"
+          />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 text-[10px] text-slate-400 font-mono bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
+            <Command size={10} /> K
+          </div>
+        </div>
+
+        <button className="px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 hover:opacity-90 shadow-md">
+          <Sparkles size={13} /> AI Search
+        </button>
+      </div>
+
+      {/* Right Controls & Profile */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Notifications */}
+        <button className="w-9 h-9 rounded-xl glass-panel border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:border-cyan-400/40 relative transition-all">
+          <Bell size={17} />
+          <span className="w-2 h-2 rounded-full bg-cyan-400 absolute top-2 right-2 animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-cyan-400 absolute top-2 right-2" />
+        </button>
+
+        {/* Calendar */}
+        <button className="w-9 h-9 rounded-xl glass-panel border border-white/10 hidden sm:flex items-center justify-center text-slate-300 hover:text-white hover:border-cyan-400/40 transition-all">
+          <Calendar size={17} />
+        </button>
+
+        {/* Messages */}
+        <button className="w-9 h-9 rounded-xl glass-panel border border-white/10 hidden sm:flex items-center justify-center text-slate-300 hover:text-white hover:border-cyan-400/40 transition-all">
+          <MessageSquare size={17} />
+        </button>
+
+        {/* Working Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          className="w-9 h-9 rounded-xl glass-panel border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all hover:scale-105"
+        >
+          {darkMode ? (
+            <Moon size={17} className="text-purple-400" />
+          ) : (
+            <Sun size={17} className="text-amber-500 fill-amber-400" />
+          )}
+        </button>
+
+        {/* User Profile Pill */}
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="flex items-center gap-2 p-1.5 pl-2.5 rounded-xl glass-panel border border-white/10 hover:border-blue-500/40 transition-all"
+          >
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+              {userName.charAt(0)}
+            </div>
+            <div className="hidden sm:flex flex-col text-left">
+              <span className="text-xs font-bold text-white leading-tight">{userName}</span>
+              <span className="text-[10px] text-cyan-400 font-mono leading-tight">{userRole}</span>
+            </div>
+            <ChevronDown size={14} className="text-slate-400" />
+          </button>
+
+          {/* Profile Dropdown */}
+          {profileOpen && (
+            <div className="absolute right-0 top-12 w-56 p-2 rounded-2xl glass-panel border border-white/15 bg-[#0C0C14]/95 shadow-2xl space-y-1 z-50">
+              <div className="p-2.5 border-b border-white/10 mb-1">
+                <div className="text-xs font-bold text-white">{userName}</div>
+                <div className="text-[10px] text-slate-400">chandu@gmail.com</div>
+              </div>
+              <a href="#profile" className="flex items-center gap-2 p-2 rounded-xl text-xs text-slate-300 hover:bg-white/10 hover:text-white">
+                <User size={14} /> My Profile
+              </a>
+              <a href="#settings" className="flex items-center gap-2 p-2 rounded-xl text-xs text-slate-300 hover:bg-white/10 hover:text-white">
+                <Settings size={14} /> Settings &amp; Preferences
+              </a>
+              <a href="/auth" className="flex items-center gap-2 p-2 rounded-xl text-xs text-red-400 hover:bg-red-500/10">
+                <ShieldCheck size={14} /> Switch Account / Logout
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
