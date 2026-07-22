@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Play, CheckCircle2, Award } from "lucide-react";
+import { BookOpen, Play } from "lucide-react";
 import { CourseData } from "./CourseDetailsModal";
 
-interface EnrollmentItem {
+export interface EnrollmentItem {
   id: string;
   course: CourseData;
   progress: number;

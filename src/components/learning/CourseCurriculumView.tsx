@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lock, Unlock, CheckCircle2, Play, Sparkles, BookOpen, ChevronRight, Clock, Award, ShieldCheck, ArrowLeft, Layers } from "lucide-react";
+import { Lock, Unlock, CheckCircle2, Clock, Award, ShieldCheck, ArrowLeft, Layers } from "lucide-react";
 import { TopicExplanationSpeech } from "./TopicExplanationSpeech";
 import { TopicQuizWidget } from "./TopicQuizWidget";
 import { MonacoAIEditor } from "./MonacoAIEditor";
@@ -12,59 +12,143 @@ interface CourseCurriculumViewProps {
   onBackToCourses: () => void;
 }
 
+const DEFAULT_TOPICS = [
+  {
+    id: 1,
+    title: "Topic 1: Language Syntax, Variables & Primitive Memory",
+    description: "Master variables, data types, RAM memory allocation, and basic syntax rules.",
+  },
+  {
+    id: 2,
+    title: "Topic 2: Decision Logic, Loops & Control Flow",
+    description: "Master if-else conditions, switch cases, for/while loops, and break statements.",
+  },
+  {
+    id: 3,
+    title: "Topic 3: Functions, Stack Frame & Scope",
+    description: "Master function declarations, parameters, return values, and call stack execution.",
+  },
+  {
+    id: 4,
+    title: "Topic 4: Arrays, Pointers & Heap Memory Allocation",
+    description: "Master array indexing, pointer arithmetic, malloc/free, and memory layout.",
+  },
+  {
+    id: 5,
+    title: "Topic 5: Object-Oriented Architecture & Capstone Project",
+    description: "Master classes, encapsulation, inheritance, polymorphism, and full project build.",
+  },
+];
+
+const PYTHON_CHAPTERS = [
+  {
+    id: 1,
+    title: "Chapter 0: Introduction to Programming",
+    description: "Understand the core concepts of programming, how computers execute code, why Python is an industry standard, and configure your local workspace IDE environment.",
+  },
+  {
+    id: 2,
+    title: "Chapter 1: Python Basics & Syntax",
+    description: "Learn variables, basic statements, comments, core data types, type conversions, reading user keyboard input, and standard PEP 8 formatting guidelines.",
+  },
+  {
+    id: 3,
+    title: "Chapter 2: Decision Making & Loops",
+    description: "Master conditionals, nested boolean logic, loop iterations using 'for' and 'while', flow modifiers like break, continue, and pass, and standard iteration helpers.",
+  },
+  {
+    id: 4,
+    title: "Chapter 3: Python Data Structures",
+    description: "Dive deep into lists, tuples, dictionaries, and sets. Learn their characteristics, common methods, slicing, indexing, and performance implications.",
+  },
+  {
+    id: 5,
+    title: "Chapter 4: Functions & Scope",
+    description: "Learn to write clean, reusable code. Cover function arguments, default parameters, variable-length arguments, scopes, namespaces, and recursion.",
+  },
+  {
+    id: 6,
+    title: "Chapter 5: Object-Oriented Programming (OOP)",
+    description: "Explore classes, objects, class constructors, method types, encapsulation, single/multiple inheritance, polymorphism, abstract classes, and composition.",
+  },
+  {
+    id: 7,
+    title: "Chapter 6: Functional & Pythonic Programming",
+    description: "Write elegant Python using map, filter, reduce, list/dict comprehensions, generators, custom decorators, closures, and the itertools library.",
+  },
+  {
+    id: 8,
+    title: "Chapter 7: Exception Handling & File Operations",
+    description: "Build resilient apps using try-except blocks, raising custom errors, file reader/writer contexts, and structured data handling (CSV, JSON).",
+  },
+  {
+    id: 9,
+    title: "Chapter 8: Modules, Packages & Virtual Environments",
+    description: "Organize large programs. Study absolute vs relative imports, package structure, virtual environments (venv), and pip dependency management.",
+  },
+  {
+    id: 10,
+    title: "Chapter 9: Working with Web APIs",
+    description: "Perform network calls using HTTP requests, fetch RESTful JSON payloads, handle authentication headers, and perform basic web scraping.",
+  },
+  {
+    id: 11,
+    title: "Chapter 10: Multithreading & AsyncIO",
+    description: "Master asynchronous code using async/await syntax, parallel thread pools, CPU vs I/O-bound optimizations, and concurrent event loops.",
+  },
+  {
+    id: 12,
+    title: "Chapter 11: CLI & Automation Tools",
+    description: "Build advanced command line tools with argparse, log output streams, automate filesystem workflows, and script background tasks.",
+  },
+  {
+    id: 13,
+    title: "Chapter 12: Web Development (Flask/FastAPI)",
+    description: "Develop high-performance REST APIs with FastAPI, specify request validation schemas, implement database persistence with SQLAlchemy, and dockerize.",
+  },
+  {
+    id: 14,
+    title: "Chapter 13: Data Analysis & Visualization",
+    description: "Learn data science fundamentals. Process arrays with NumPy, clean dataframes with Pandas, and construct visualization plots with Matplotlib.",
+  },
+  {
+    id: 15,
+    title: "Chapter 14: AI Integration & Model Architectures",
+    description: "Build AI services. Run local model inferences, connect to HuggingFace transformers, build LLM pipelines with LangChain, and wrap in API endpoints.",
+  },
+  {
+    id: 16,
+    title: "Chapter 15: Python Interview & Career Prep",
+    description: "Prepare for your dream role. Solve coding challenges, review mock interviews, optimize your tech resume, and polish your GitHub portfolio.",
+  }
+];
+
 export function CourseCurriculumView({
   courseTitle,
   language = "cpp",
   onBackToCourses,
 }: CourseCurriculumViewProps) {
+  const isPython = language === "python";
+  const topics = isPython ? PYTHON_CHAPTERS : DEFAULT_TOPICS;
+
   const [completedTopicIds, setCompletedTopicIds] = useState<number[]>([1]);
   const [activeTopicId, setActiveTopicId] = useState<number>(1);
-  const [stepAComplete, setStepAComplete] = useState(false);
-  const [stepBComplete, setStepBComplete] = useState(false);
-  const [stepCComplete, setStepCComplete] = useState(false);
-
-  const topics = [
-    {
-      id: 1,
-      title: "Topic 1: Language Syntax, Variables & Primitive Memory",
-      unlocked: true,
-      description: "Master variables, data types, RAM memory allocation, and basic syntax rules.",
-    },
-    {
-      id: 2,
-      title: "Topic 2: Decision Logic, Loops & Control Flow",
-      unlocked: completedTopicIds.includes(1),
-      description: "Master if-else conditions, switch cases, for/while loops, and break statements.",
-    },
-    {
-      id: 3,
-      title: "Topic 3: Functions, Stack Frame & Scope",
-      unlocked: completedTopicIds.includes(2),
-      description: "Master function declarations, parameters, return values, and call stack execution.",
-    },
-    {
-      id: 4,
-      title: "Topic 4: Arrays, Pointers & Heap Memory Allocation",
-      unlocked: completedTopicIds.includes(3),
-      description: "Master array indexing, pointer arithmetic, malloc/free, and memory layout.",
-    },
-    {
-      id: 5,
-      title: "Topic 5: Object-Oriented Architecture & Capstone Project",
-      unlocked: completedTopicIds.includes(4),
-      description: "Master classes, encapsulation, inheritance, polymorphism, and full project build.",
-    },
-  ];
 
   const currentTopic = topics.find((t) => t.id === activeTopicId) || topics[0];
 
-  const handleFinishTopic1 = () => {
-    if (!completedTopicIds.includes(1)) {
-      setCompletedTopicIds([...completedTopicIds, 1]);
+  const handleFinishTopic = (id: number) => {
+    if (!completedTopicIds.includes(id)) {
+      setCompletedTopicIds([...completedTopicIds, id]);
     }
-    alert("🎉 Congratulations! You completed Topic 1 (AI Voice Explainer + Quiz + Monaco Code Editor). Topic 2 is now UNLOCKED!");
-    setActiveTopicId(2);
+    if (id < topics.length) {
+      alert(`🎉 Congratulations! You completed Topic ${id} (${currentTopic.title}). Next Topic is now UNLOCKED!`);
+      setActiveTopicId(id + 1);
+    } else {
+      alert("🎉 Congratulations! You have completed all units in this programming curriculum!");
+    }
   };
+
+  const progressPercent = Math.round((completedTopicIds.length / topics.length) * 100);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto w-full pb-12">
@@ -95,7 +179,7 @@ export function CourseCurriculumView({
             </div>
             <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold flex items-center gap-1.5">
               <Award size={14} className="text-cyan-400" />
-              <span>Overall Progress: {completedTopicIds.length * 20}%</span>
+              <span>Overall Progress: {progressPercent}%</span>
             </div>
           </div>
         </div>
@@ -104,12 +188,12 @@ export function CourseCurriculumView({
         <div className="space-y-1">
           <div className="flex justify-between text-xs text-slate-300 font-mono">
             <span>Sequential Curriculum Progress</span>
-            <span className="text-cyan-400 font-bold">{completedTopicIds.length} of 5 Topics Unlocked</span>
+            <span className="text-cyan-400 font-bold">{completedTopicIds.length} of {topics.length} Topics Unlocked</span>
           </div>
           <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-400 rounded-full transition-all duration-700"
-              style={{ width: `${completedTopicIds.length * 20}%` }}
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
@@ -123,13 +207,13 @@ export function CourseCurriculumView({
             Topic Curriculum Pipeline (Sequential Unlock)
           </h2>
           <span className="text-xs text-cyan-400 font-mono">
-            Topic 1 Active &bull; Topics 2..5 Locked
+            Topic {activeTopicId} Active &bull; Topics {activeTopicId + 1}..{topics.length} Locked
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+        <div className={`grid grid-cols-2 ${isPython ? "sm:grid-cols-4 lg:grid-cols-8" : "sm:grid-cols-5"} gap-3`}>
           {topics.map((t) => {
-            const isUnlocked = t.unlocked || completedTopicIds.includes(t.id - 1);
+            const isUnlocked = t.id === 1 || completedTopicIds.includes(t.id - 1) || completedTopicIds.includes(t.id);
             const isSelected = activeTopicId === t.id;
             const isCompleted = completedTopicIds.includes(t.id);
 
@@ -149,21 +233,21 @@ export function CourseCurriculumView({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white/10 text-cyan-300">
-                    TOPIC {t.id}
+                    {isPython ? `CH ${t.id - 1}` : `TOPIC ${t.id}`}
                   </span>
                   {isCompleted ? (
-                    <CheckCircle2 size={18} className="text-emerald-400" />
+                    <CheckCircle2 size={18} className="text-emerald-400 font-bold" />
                   ) : isUnlocked ? (
-                    <Unlock size={16} className="text-cyan-400" />
+                    <Unlock size={15} className="text-cyan-400" />
                   ) : (
-                    <Lock size={16} className="text-slate-500" />
+                    <Lock size={15} className="text-slate-500" />
                   )}
                 </div>
 
                 <div>
-                  <div className="text-xs font-extrabold line-clamp-2 mt-1">{t.title}</div>
+                  <div className="text-[11px] font-extrabold line-clamp-2 mt-1 leading-snug">{t.title}</div>
                   {!isUnlocked && (
-                    <span className="text-[10px] text-slate-500 block mt-1 font-mono">🔒 Complete Topic {t.id - 1} to Unlock</span>
+                    <span className="text-[8px] text-slate-500 block mt-1 font-mono leading-none">🔒 Complete previous topic</span>
                   )}
                 </div>
               </button>
@@ -173,54 +257,41 @@ export function CourseCurriculumView({
       </div>
 
       {/* ACTIVE TOPIC DEEP LEARNING STUDIO */}
-      {activeTopicId === 1 ? (
-        <div className="space-y-8 pt-2">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <div>
-              <span className="text-xs font-mono font-bold text-cyan-400 uppercase">ACTIVE TOPIC WORKSPACE</span>
-              <h2 className="text-xl sm:text-2xl font-black text-white">{currentTopic.title}</h2>
-              <p className="text-xs text-slate-400">{currentTopic.description}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-1">
-                <ShieldCheck size={14} /> Topic 1 Unlocked
-              </span>
-            </div>
+      <div className="space-y-8 pt-2">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div>
+            <span className="text-xs font-mono font-bold text-cyan-400 uppercase">ACTIVE TOPIC WORKSPACE</span>
+            <h2 className="text-xl sm:text-2xl font-black text-white">{currentTopic.title}</h2>
+            <p className="text-xs text-slate-400">{currentTopic.description}</p>
           </div>
-
-          {/* STEP A: AI VOICE CONCEPT EXPLAINER */}
-          <TopicExplanationSpeech
-            title="Topic 1: Language Syntax & Variables"
-            explanation={`Welcome to Topic 1 of ${courseTitle}! In this initial module, we master core syntax, memory representation, and data types. Variables store values in computer memory registers. Remember: static typing requires variable type definitions and semicolons at the end of each statement. Listen to the AI voice explainer below, then proceed to the Quiz and Code Editor.`}
-            onCompleteExplanation={() => setStepAComplete(true)}
-          />
-
-          {/* STEP B: TOPIC QUIZ (5-10 QUESTIONS) */}
-          <TopicQuizWidget
-            quizDataJson=""
-            onCompleteQuiz={() => setStepBComplete(true)}
-          />
-
-          {/* STEP C: MONACO AI CODE EDITOR */}
-          <MonacoAIEditor
-            language={language}
-            onCompleteCode={() => {
-              setStepCComplete(true);
-              handleFinishTopic1();
-            }}
-          />
-        </div>
-      ) : (
-        <div className="glass-panel p-10 rounded-3xl border border-white/10 text-center space-y-4 shadow-2xl">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-400 mx-auto flex items-center justify-center text-cyan-400">
-            <Unlock size={28} />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-1">
+              <ShieldCheck size={14} /> Synced &amp; Unlocked
+            </span>
           </div>
-          <h3 className="text-2xl font-black text-white">Topic {activeTopicId} Unlocked &amp; Active</h3>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
-            Congratulations on unlocking Topic {activeTopicId}! Master the AI Voice Concept Explainer, complete the 5-10 Question Quiz, and execute your code in the Monaco AI Editor to complete the curriculum.
-          </p>
         </div>
-      )}
+
+        {/* STEP A: AI VOICE CONCEPT EXPLAINER */}
+        <TopicExplanationSpeech
+          title={currentTopic.title}
+          explanation={`Welcome to ${currentTopic.title} of ${courseTitle}! In this module, we cover: ${currentTopic.description}. Pay close attention to standard syntactical guidelines, performance trade-offs, and memory paradigms. Listen to the AI voice explainer below, then complete the topic challenge.`}
+          onCompleteExplanation={() => {}}
+        />
+
+        {/* STEP B: TOPIC QUIZ (5-10 QUESTIONS) */}
+        <TopicQuizWidget
+          quizDataJson=""
+          onCompleteQuiz={() => {}}
+        />
+
+        {/* STEP C: MONACO AI CODE EDITOR */}
+        <MonacoAIEditor
+          language={language}
+          onCompleteCode={() => {
+            handleFinishTopic(currentTopic.id);
+          }}
+        />
+      </div>
     </div>
   );
 }

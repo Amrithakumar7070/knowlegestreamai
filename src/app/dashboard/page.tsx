@@ -7,14 +7,14 @@ import { RightAIPanel } from "@/components/dashboard/RightAIPanel";
 import { DashboardFooter } from "@/components/dashboard/DashboardFooter";
 import { CourseDetailsModal, CourseData } from "@/components/courses/CourseDetailsModal";
 import { CoursePlayerModal } from "@/components/courses/CoursePlayerModal";
-import { MyCoursesWidget } from "@/components/courses/MyCoursesWidget";
+import { MyCoursesWidget, EnrollmentItem } from "@/components/courses/MyCoursesWidget";
 import { Sparkles, Star, BookOpen, Layers } from "lucide-react";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [activeSection, setActiveSection] = useState<"catalog" | "my-courses">("catalog");
   const [courses, setCourses] = useState<CourseData[]>([]);
-  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [enrollments, setEnrollments] = useState<EnrollmentItem[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<CourseData | null>(null);
   const [learningCourse, setLearningCourse] = useState<CourseData | null>(null);
   const [userEmail] = useState("chandu@gmail.com");
